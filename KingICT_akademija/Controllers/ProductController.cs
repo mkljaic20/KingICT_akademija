@@ -23,5 +23,17 @@ namespace KingICT_akademija.Controllers
             var products = await productService.GetProductsAPI();
             return Ok(products);
         }
+
+        //GET api/products/{id}
+        //retrieves product with provided id
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetProductByID(int id)
+        {
+            var product = await productService.GetProductByIdAPI(id);
+
+            if (product == null)
+                return NotFound();
+            return Ok(product);
+        }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using KingICT_akademija.Models;
 using Newtonsoft.Json.Linq;
-using System.Runtime.InteropServices.JavaScript;
 
 namespace KingICT_akademija.Services
 {
@@ -32,6 +31,14 @@ namespace KingICT_akademija.Services
             }).ToList();
         }
 
+        public async Task<Product> GetProductByIdAPI(int id)
+        {
+            var response = await httpClient.GetStringAsync($"https://dummyjson.com/products/{id}");
+            var product = JObject.Parse(response).ToObject<Product>();
+
+            return product;
+        }
+
         private string ShortenDescription(string description)
         {
             if (string.IsNullOrEmpty(description))
@@ -42,5 +49,7 @@ namespace KingICT_akademija.Services
 
             return description.Substring(0, 100);
         }
+
+
     }
 }
