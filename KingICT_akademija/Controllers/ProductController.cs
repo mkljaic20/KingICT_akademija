@@ -35,5 +35,14 @@ namespace KingICT_akademija.Controllers
                 return NotFound();
             return Ok(product);
         }
+
+        //GET: api/products/filter
+        //retrieves all products with specified filters
+        [HttpGet("filter")]
+        public async Task<ActionResult<IEnumerable<Product>>> FilterProducts(string category, decimal? minPrice, decimal? maxPrice)
+        {
+            var products = await productService.FilterProductsAsync(category, minPrice, maxPrice);
+            return Ok(products);
+        }
     }
 }

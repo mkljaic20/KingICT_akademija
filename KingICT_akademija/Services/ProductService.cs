@@ -1,5 +1,6 @@
 ﻿using KingICT_akademija.Models;
 using Newtonsoft.Json.Linq;
+using System.Net.Http;
 
 namespace KingICT_akademija.Services
 {
@@ -38,6 +39,30 @@ namespace KingICT_akademija.Services
 
             return product;
         }
+
+        public async Task<List<Product>> FilterProductsAsync(string category, decimal? minPrice, decimal? maxPrice)
+        {
+            var response = await httpClient.GetAsync("https://dummyjson.com/products");
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var products = JObject.Parse(json)["products"].ToArray();
+
+            return products.Where(p =>
+                (string.IsNullOrEmpty(category) || p["category"]?.ToString() == category) &&
+                (!minPrice.HasValue || p["price"]?.Value<decimal>() >= minPrice) &&
+                (!maxPrice.HasValue || p["price"]?.Value<decimal>() <= maxPrice))
+                .Select(p => new Product
+                {
+                    Id = p["id"]?.Value<int>() ?? 0,
+                    Title = p["title"]?.ToString() ?? "No title",
+                    Price = p["price"]?.Value<decimal>() ?? 0,
+                    ShortDescription = ShortenDescription(p["description"]?.ToString() ?? string.Empty),
+                    Image = p["thumbnail"]?.ToString() ?? string.Empty,
+                    Category = p["category"]?.ToString() ?? "No category"
+                }).ToList();
+        }
+
 
         private string ShortenDescription(string description)
         {
